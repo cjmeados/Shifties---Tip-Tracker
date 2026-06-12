@@ -21,7 +21,7 @@ export default function RootLayout({ children }) { // RootLayout could be banana
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`} // gives access to our fonts from above
-      > // antialiased makes text rendering smoother
+      > 
         {children} 
       </body> 
     </html>
