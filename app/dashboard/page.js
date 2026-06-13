@@ -1,8 +1,8 @@
-import { cookies } from 'next/headers'
-import { verifyToken } from '@/lib/jwt'
+import { cookies } from 'next/headers' // cookies is a function from next.js to read incoming cookies. next/headers is a module for accessing request headers on the server. cookies also only work server side
+import { verifyToken } from '@/lib/jwt' // go to root folder and from there lib folder and jwt file grab the verify token functon to verify JSON web tokens
 
-export default async function Dashboard() {
-  const cookieStore = await cookies()
+export default async function Dashboard() { // this is the main thing the file exports and can use await inside it. Dashboard is the component
+  const cookieStore = await cookies() // cookies() reads the cookies and we store it and await the promise (maybe incorrect?)
   const token = cookieStore.get('token')
   const user = token ? await verifyToken(token.value) : null
 
