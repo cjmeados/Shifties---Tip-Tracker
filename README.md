@@ -1,3 +1,6 @@
+This app is meant to assist shift workers and individuals who have tipped income. It is meant to be a way to see, analyze, and organize one's income into a concrete manner for their understanding/use.
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
