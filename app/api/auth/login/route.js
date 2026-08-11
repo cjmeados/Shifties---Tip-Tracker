@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin as supabase } from '@/lib/supabase-admin'
 import bcrypt from 'bcrypt'
 import { signToken } from '@/lib/jwt'
 import { cookies } from 'next/headers'
