@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 const years = []
@@ -11,6 +11,10 @@ export default function CalendarView() {
     const today = new Date()
     const [currentMonth, setCurrentMonth] = useState(today.getMonth())
     const [currentYear, setCurrentYear] = useState(today.getFullYear())
+
+    const [entriesByDate, setEntriesByDate] = useState({})
+    const [loading, setLoading] = useState(true)
+
     const years = []
 
     const firstDayOfTheMonthIndex = new Date(currentYear, currentMonth, 1).getDay() 
@@ -33,6 +37,38 @@ export default function CalendarView() {
         years.push(i)
     }
 
+    // Build "YYYY-MM-DD" strings for the visible month's range
+    const paddedMonth = String(currentMonth + 1).padStart(2, '0')
+    const start = `${currentYear}-${paddedMonth}-01`
+    const end = `${currentYear}-${paddedMonth}-${String(lastDayOfMonth).padStart(2, '0')}`
+
+    useEffect(() => {
+        async function fetchEntries() {
+            setLoading(true)
+
+            try {
+                const res = await fetch(`/api/tip-entries?start=${start}&end=${end}`)
+                const { data } = await res.json()
+
+                const lookup = {}
+                ;(data || []).forEach((entry) => {
+                    lookup[entry.entry_date] = entry
+                })
+
+                setEntriesByDate(lookup)
+            } catch (err) {
+                console.error('Failed to fetch entries:', err)
+                setEntriesByDate({})
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchEntries()
+    }, [currentMonth, currentYear])
+
+    console.log('entriesByDate:', entriesByDate)
+
     function nextMonth() {
         if (currentMonth == 11 && currentYear == today.getFullYear()) {
             return
@@ -53,6 +89,23 @@ export default function CalendarView() {
         }
     }
 
+function getDayColor(day) {
+    if (day === null) return '' // padding cell, no color needed
+
+    const dateStr = `${currentYear}-${paddedMonth}-${String(day).padStart(2, '0')}`
+    const entry = entriesByDate[dateStr]
+
+    if (!entry) {
+        return 'bg-gray-300'   // no row at all
+    }
+
+    if (!entry.hours_worked || entry.hours_worked === 0) {
+        return 'bg-yellow-300' // row exists, but hours is 0/null
+    }
+
+    return 'bg-green-300'      // row exists, hours > 0
+}
+
   return (
     <div>
 
@@ -66,7 +119,7 @@ export default function CalendarView() {
 
         <div className="grid grid-cols-7">
             {calendarDays.map((day, index) => (
-                <div key={index} className="text-center border h-16">
+                <div key={index} className= {`text-center border h-16 bg-gray-300 ${getDayColor(day)}`}>
                     {day !== null ? day : ""}
                 </div>
             ))}
