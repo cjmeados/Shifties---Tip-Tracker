@@ -30,7 +30,7 @@ export async function GET(request) {
   // 4. Query tip_entries for this user, in the date range
   const { data, error } = await supabase
     .from('tip_entries')
-    .select('entry_date, hours_worked, total_tips')
+    .select('entry_date, hours_worked, total_tips, hourly_wage')
     .eq('user_id', payload.id)
     .gte('entry_date', start)
     .lte('entry_date', end)
