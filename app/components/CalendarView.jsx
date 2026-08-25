@@ -119,7 +119,7 @@ function getDayColor(day) {
 
         <div className="grid grid-cols-7">
             {calendarDays.map((day, index) => (
-                <div key={index} className= {`text-center border h-16 bg-gray-300 ${getDayColor(day)}`}>
+                <div key={index} className= {`text-center border h-23 w-20 bg-gray-300 ${getDayColor(day)}`}>
                     {day !== null ? day : ""}
                 </div>
             ))}
