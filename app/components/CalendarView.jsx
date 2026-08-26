@@ -117,13 +117,31 @@ function getDayColor(day) {
             ))}
         </div>
 
-        <div className="grid grid-cols-7">
-            {calendarDays.map((day, index) => (
-                <div key={index} className= {`text-center border h-23 w-20 bg-gray-300 ${getDayColor(day)}`}>
-                    {day !== null ? day : ""}
+    <div className="grid grid-cols-7">
+        {calendarDays.map((day, index) => {
+            if (day === null) {
+                return <div key={index} className="border h-32 w-16"></div>
+            }
+
+            const dateStr = `${currentYear}-${paddedMonth}-${String(day).padStart(2, '0')}`
+            const entry = entriesByDate[dateStr]
+
+            return (
+                <div
+                    key={index}
+                    className={`border h-32 p-1 flex flex-col ${getDayColor(day)}`}
+                >
+                    <div className="text-sm font-semibold">{day}</div>
+
+                    {entry && (
+                        <div className="text-xs mt-1">
+                            ${entry.total_tips}
+                        </div>
+                    )}
                 </div>
-            ))}
-        </div> 
+            )
+        })}
+    </div>
 
         <div>
 
