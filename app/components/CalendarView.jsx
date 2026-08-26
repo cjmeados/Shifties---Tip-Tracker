@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import DayEntryForm from './DayEntryForm'
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 const years = []
@@ -22,6 +23,20 @@ export default function CalendarView() {
     const totalDaysFromStartIndex = firstDayOfTheMonthIndex + lastDayOfMonth
     const trailingPadding = (7 - (totalDaysFromStartIndex % 7)) % 7
     const totalCells = totalDaysFromStartIndex + trailingPadding
+
+    const [selectedDay, setSelectedDay] = useState(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
+    function handleDayClick(day) {
+        if (day === null) return
+        setSelectedDay(day)
+        setIsModalOpen(true)
+    }
+
+    function closeModal() {
+        setIsModalOpen(false)
+        setSelectedDay(null)
+    }
 
     const calendarDays = []
     for (let i = 0; i < totalCells; i++) {
@@ -89,22 +104,23 @@ export default function CalendarView() {
         }
     }
 
-function getDayColor(day) {
-    if (day === null) return '' // padding cell, no color needed
 
-    const dateStr = `${currentYear}-${paddedMonth}-${String(day).padStart(2, '0')}`
-    const entry = entriesByDate[dateStr]
+    function getDayColor(day) {
+        if (day === null) return '' // padding cell, no color needed
 
-    if (!entry) {
-        return 'bg-gray-300'   // no row at all
+        const dateStr = `${currentYear}-${paddedMonth}-${String(day).padStart(2, '0')}`
+        const entry = entriesByDate[dateStr]
+
+        if (!entry) {
+            return 'bg-gray-300'   // no row at all
+        }
+
+        if (!entry.hours_worked || entry.hours_worked === 0) {
+            return 'bg-yellow-300' // row exists, but hours is 0/null
+        }
+
+        return 'bg-green-300'      // row exists, hours > 0
     }
-
-    if (!entry.hours_worked || entry.hours_worked === 0) {
-        return 'bg-yellow-300' // row exists, but hours is 0/null
-    }
-
-    return 'bg-green-300'      // row exists, hours > 0
-}
 
   return (
     <div>
@@ -120,7 +136,7 @@ function getDayColor(day) {
     <div className="grid grid-cols-7">
         {calendarDays.map((day, index) => {
             if (day === null) {
-                return <div key={index} className="border h-32"></div>
+                return <div key={index} className="border h-32 "></div>
             }
 
             const dateStr = `${currentYear}-${paddedMonth}-${String(day).padStart(2, '0')}`
@@ -129,7 +145,8 @@ function getDayColor(day) {
             return (
                 <div
                     key={index}
-                    className={`border h-32 p-1 flex flex-col ${getDayColor(day)}`}
+                    onClick={() => handleDayClick(day)}
+                    className={`border h-32 p-1 flex flex-col cursor-pointer transition-transform duration-150 ease-out hover:scale-105 hover:z-10 hover:shadow-md ${getDayColor(day)}`}
                 >
                     <div className="text-sm font-semibold">{day}</div>
 
@@ -162,6 +179,20 @@ function getDayColor(day) {
                 ))}
             </select>
         </div>
+
+            {isModalOpen && (
+                <DayEntryForm
+                date={`${currentYear}-${paddedMonth}-${String(selectedDay).padStart(2, '0')}`}
+                existingEntry={entriesByDate[`${currentYear}-${paddedMonth}-${String(selectedDay).padStart(2, '0')}`]}
+                onClose={closeModal}
+                onSave={(newEntry) => {
+            // update entriesByDate locally so the calendar reflects it immediately
+                setEntriesByDate(prev => ({ ...prev, [newEntry.entry_date]: newEntry }))
+                closeModal()
+            }}
+            />
+            )}
+
     </div>
   )
 }
