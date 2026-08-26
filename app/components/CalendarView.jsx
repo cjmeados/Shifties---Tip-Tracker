@@ -120,7 +120,7 @@ function getDayColor(day) {
     <div className="grid grid-cols-7">
         {calendarDays.map((day, index) => {
             if (day === null) {
-                return <div key={index} className="border h-32 w-16"></div>
+                return <div key={index} className="border h-32"></div>
             }
 
             const dateStr = `${currentYear}-${paddedMonth}-${String(day).padStart(2, '0')}`
@@ -135,7 +135,11 @@ function getDayColor(day) {
 
                     {entry && (
                         <div className="text-xs mt-1">
-                            ${entry.total_tips}
+                            <div>{entry.hours_worked} hours</div>
+                            <div>${entry.total_tips} tips</div>
+                            <div>${entry.hourly_wage * entry.hours_worked} wages</div>
+                            <div>${entry.hourly_wage * entry.hours_worked + entry.total_tips} total</div>
+                            <div>${(entry.hourly_wage * entry.hours_worked + entry.total_tips) / entry.hours_worked} hourly</div>
                         </div>
                     )}
                 </div>
